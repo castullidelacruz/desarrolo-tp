@@ -40,10 +40,11 @@ const ProductDetailPage = () => {
   const comprar = () => {
     const ok = agregarAlCarrito(product, cantidad);
 
-    if (!ok) {
+    if (ok === false) {
       return;
     }
-    navigate("/");
+    
+    navigate("/carrito");
   };
 
   useEffect(() => {
@@ -91,10 +92,6 @@ const ProductDetailPage = () => {
   const precioProducto = product.precio || 0;
   const descripcionProducto =
     product.descripcion || "Sin descripción disponible.";
-  const imagenUrl =
-    product.fotos && product.fotos.length > 0
-      ? product.fotos[0]
-      : product.image || "placeholder-url";
   const nombreVendedor = product.vendedor
     ? product.vendedor.nombre || product.vendedor._id
     : "Vendedor Desconocido";
@@ -105,6 +102,9 @@ const ProductDetailPage = () => {
     <div className="product-detail-container">
       <div className="product-header">
         <h1 className="product-nombre">{tituloProducto}</h1>
+        <div className="product-seller-header">
+          Vendedor: <strong>{nombreVendedor}</strong>
+        </div>
       </div>
 
       <div className="product-content">
@@ -121,13 +121,6 @@ const ProductDetailPage = () => {
             <div className="details-col-description">
               <div className="product-description">
                 <p>{descripcionProducto}</p>
-              </div>
-
-              {/* 2. Sección de Vendedor movida junto al precio */}
-              <div className="product-seller-section">
-                <p>
-                  Vendedor: <strong>{nombreVendedor}</strong>
-                </p>
               </div>
             </div>
           </div>

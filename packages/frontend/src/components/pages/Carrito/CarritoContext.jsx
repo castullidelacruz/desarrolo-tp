@@ -7,6 +7,8 @@ import React, {
   useRef,
 } from "react";
 import PropTypes from "prop-types";
+import { notify } from "../../../components/common/NotificationCenter.jsx";
+import ConfirmDialog from "../../../components/common/ConfirmDialog.jsx";
 
 const STORAGE_KEY = "miapp_carrito_v1";
 
@@ -30,6 +32,12 @@ export const CarritoProvider = ({ children }) => {
       console.error("Error leyendo carrito desde localStorage:", e);
       return [];
     }
+  });
+
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    producto: null,
+    cantidad: 0,
   });
 
   const saveTimeout = useRef(null);
@@ -79,24 +87,12 @@ export const CarritoProvider = ({ children }) => {
         first.producto?.vendedor;
 
       if (vendedorActual !== vendedorNuevo) {
-        const aceptar = window.confirm(
-          "Tu carrito contiene productos de otro vendedor. ¿Deseas reemplazarlo?",
-        );
-
-        if (!aceptar) return false;
-
-        // 🟢 Crear carrito normalizado
-        const id = producto._id || producto.id;
-
-        setCarrito([
-          {
-            ...producto,
-            _id: id,
-            cantidad: Number(cantidad),
-          },
-        ]);
-
-        return;
+        setConfirmDialog({
+          open: true,
+          producto,
+          cantidad,
+        });
+        return false;
       }
     }
 
@@ -133,6 +129,28 @@ export const CarritoProvider = ({ children }) => {
         },
       ];
     });
+
+    notify(`Producto agregado al carrito`, { severity: "success" });
+  };
+
+  const handleConfirmReplace = () => {
+    const { producto, cantidad } = confirmDialog;
+    const id = producto._id || producto.id;
+
+    setCarrito([
+      {
+        ...producto,
+        _id: id,
+        cantidad: Number(cantidad),
+      },
+    ]);
+
+    notify(`Carrito reemplazado. Producto agregado`, { severity: "success" });
+    setConfirmDialog({ open: false, producto: null, cantidad: 0 });
+  };
+
+  const handleCancelReplace = () => {
+    setConfirmDialog({ open: false, producto: null, cantidad: 0 });
   };
 
   const actualizarCantidad = (_id, cantidad) => {
@@ -169,7 +187,19 @@ export const CarritoProvider = ({ children }) => {
   );
 
   return (
-    <CarritoContext.Provider value={value}>{children}</CarritoContext.Provider>
+    <CarritoContext.Provider value={value}>
+      {children}
+      <ConfirmDialog
+        open={confirmDialog.open}
+        title="Reemplazar carrito"
+        description="Tu carrito contiene productos de otro vendedor. ¿Deseas reemplazarlo?"
+        confirmText="Reemplazar"
+        cancelText="Cancelar"
+        confirmColor="warning"
+        onConfirm={handleConfirmReplace}
+        onClose={handleCancelReplace}
+      />
+    </CarritoContext.Provider>
   );
 };
 

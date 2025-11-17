@@ -8,37 +8,106 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Estados del formulario
+  const [formData, setFormData] = useState({
+    nombre: "",
+    email: "",
+    telefono: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  // Estados de validación por campo
+  const [fieldErrors, setFieldErrors] = useState({
+    nombre: "",
+    email: "",
+    telefono: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Limpiar error del campo cuando el usuario empiece a escribir
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Validar nombre
+    if (!formData.nombre.trim()) {
+      newErrors.nombre = "El nombre es obligatorio";
+    } else if (formData.nombre.trim().length < 2) {
+      newErrors.nombre = "El nombre debe tener al menos 2 caracteres";
+    } else if (formData.nombre.trim().length > 100) {
+      newErrors.nombre = "El nombre no puede tener más de 100 caracteres";
+    }
+
+    // Validar email
+    if (!formData.email.trim()) {
+      newErrors.email = "El email es obligatorio";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Ingresa un email válido";
+    }
+
+    // Validar teléfono
+    if (!formData.telefono.trim()) {
+      newErrors.telefono = "El teléfono es obligatorio";
+    } else if (!/^\d+$/.test(formData.telefono)) {
+      newErrors.telefono = "El teléfono debe contener solo números";
+    }
+
+    // Validar contraseña
+    if (!formData.password) {
+      newErrors.password = "La contraseña es obligatoria";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "La contraseña debe tener al menos 6 caracteres";
+    }
+
+    // Validar confirmación de contraseña
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Debes confirmar la contraseña";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Las contraseñas no coinciden";
+    }
+
+    setFieldErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const password = formData.get("password");
-    const confirmPassword = formData.get("confirmPassword");
-
-    // Validar que las contraseñas coincidan
-    if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden");
-      setLoading(false);
+    // Validar formulario
+    if (!validateForm()) {
+      setError("Por favor, completa todos los campos correctamente.");
       return;
     }
 
+    setLoading(true);
+
     const userInfo = {
-      nombre: formData.get("nombre"),
-      email: formData.get("email"),
-      telefono: formData.get("telefono"),
-      password: password,
+      nombre: formData.nombre,
+      email: formData.email,
+      telefono: formData.telefono,
+      password: formData.password,
       tipo: ["COMPRADOR"], // Por defecto, los usuarios que se registran son compradores
     };
 
     try {
       await register(userInfo);
 
-      const remember = formData.get("remember") === "on";
-      if (remember) {
-        await login({ email: userInfo.email, password: userInfo.password });
-      }
+      // Auto-login si el usuario marcó "recordarme" (opcional)
+      // const remember = formData.get("remember") === "on";
+      // if (remember) {
+      //   await login({ email: userInfo.email, password: userInfo.password });
+      // }
 
       navigate("/login", {
         replace: true,
@@ -79,13 +148,17 @@ const Register = () => {
               id="nombre"
               name="nombre"
               type="text"
-              minLength={2}
-              maxLength={100}
-              className="auth-input"
+              className={`auth-input ${fieldErrors.nombre ? "auth-input-error" : ""}`}
               placeholder="Tu nombre"
-              required
+              value={formData.nombre}
+              onChange={handleChange}
               disabled={loading}
             />
+            {fieldErrors.nombre && (
+              <p style={{ fontSize: "12px", color: "#c33", marginTop: "4px" }}>
+                {fieldErrors.nombre}
+              </p>
+            )}
           </div>
           <div className="auth-field">
             <label htmlFor="email">Email</label>
@@ -93,23 +166,35 @@ const Register = () => {
               id="email"
               name="email"
               type="email"
-              className="auth-input"
+              className={`auth-input ${fieldErrors.email ? "auth-input-error" : ""}`}
               placeholder="tu@email.com"
-              required
+              value={formData.email}
+              onChange={handleChange}
               disabled={loading}
             />
+            {fieldErrors.email && (
+              <p style={{ fontSize: "12px", color: "#c33", marginTop: "4px" }}>
+                {fieldErrors.email}
+              </p>
+            )}
           </div>
           <div className="auth-field">
-            <label htmlFor="telefono">Telefono</label>
+            <label htmlFor="telefono">Teléfono</label>
             <input
               id="telefono"
               name="telefono"
-              type="tel"
-              className="auth-input"
-              placeholder="Tu telefono"
-              required
+              type="text"
+              className={`auth-input ${fieldErrors.telefono ? "auth-input-error" : ""}`}
+              placeholder="Tu teléfono"
+              value={formData.telefono}
+              onChange={handleChange}
               disabled={loading}
             />
+            {fieldErrors.telefono && (
+              <p style={{ fontSize: "12px", color: "#c33", marginTop: "4px" }}>
+                {fieldErrors.telefono}
+              </p>
+            )}
           </div>
           <div className="auth-field">
             <label htmlFor="password">Contraseña</label>
@@ -117,12 +202,21 @@ const Register = () => {
               id="password"
               name="password"
               type="password"
-              minLength={6}
-              className="auth-input"
+              className={`auth-input ${fieldErrors.password ? "auth-input-error" : ""}`}
               placeholder="••••••••"
-              required
+              value={formData.password}
+              onChange={handleChange}
               disabled={loading}
             />
+            {fieldErrors.password ? (
+              <p style={{ fontSize: "12px", color: "#c33", marginTop: "4px" }}>
+                {fieldErrors.password}
+              </p>
+            ) : (
+              <p style={{ fontSize: "12px", color: "#666", marginTop: "4px" }}>
+                Mínimo 6 caracteres
+              </p>
+            )}
           </div>
           <div className="auth-field">
             <label htmlFor="confirmPassword">Confirmar contraseña</label>
@@ -130,12 +224,17 @@ const Register = () => {
               id="confirmPassword"
               name="confirmPassword"
               type="password"
-              minLength={6}
-              className="auth-input"
+              className={`auth-input ${fieldErrors.confirmPassword ? "auth-input-error" : ""}`}
               placeholder="••••••••"
-              required
+              value={formData.confirmPassword}
+              onChange={handleChange}
               disabled={loading}
             />
+            {fieldErrors.confirmPassword && (
+              <p style={{ fontSize: "12px", color: "#c33", marginTop: "4px" }}>
+                {fieldErrors.confirmPassword}
+              </p>
+            )}
           </div>
           <div className="auth-actions">
             <button

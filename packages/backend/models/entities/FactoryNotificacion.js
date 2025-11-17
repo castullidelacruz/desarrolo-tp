@@ -1,5 +1,4 @@
-import { Notificacion } from "./Notificacion.js";
-import { EstadoPedido } from "./EstadoPedido.js";
+import { EstadoPedido } from "../enums/EstadoPedido.js";
 import { mensajesEN } from "../configStrings/mensajeEN.js";
 import { mensajesES } from "../configStrings/mensajesES.js";
 
@@ -16,43 +15,86 @@ export class FactoryNotificacion {
     return this.mensajes[estado] || this.mensajes["DEFAULT"];
   }
 
-  crearSegunPedido(pedido) {
-    let destinatario;
-    let mensaje;
-
-    const estadoHandlers = {
+  /**
+   * Crea una notificación para la base de datos según el estado del pedido
+   * @param {Object} pedidoData - Datos del pedido populados desde MongoDB
+   * @param {string} estado - Estado del pedido
+   * @param {string} pedidoNumero - Número del pedido (ej: #123)
+   * @param {string} productoTitulo - Título del primer producto
+   * @param {Date} fecha - Fecha del cambio de estado
+   * @returns {Object} Objeto con los datos de la notificación
+   */
+  crearNotificacionDB(pedidoData, estado, pedidoNumero, productoTitulo, fecha) {
+    const handlers = {
       [EstadoPedido.Pendiente]: () => {
-        destinatario = pedido.getComprador();
-        const total = pedido.calcularTotal();
-        const productos = pedido.getItemsDescripcion();
-        const direccion = pedido.getDireccionEntrega();
+        // Notificaciones para comprador y vendedor cuando se crea el pedido
+        const notificaciones = [];
+        
+        // Notificación para el comprador
+        notificaciones.push({
+          userId: pedidoData.comprador?._id || pedidoData.comprador,
+          tipo: "confirmacion_pedido",
+          mensaje: `Tu pedido ${pedidoNumero} fue creado exitosamente`,
+          pedidoId: pedidoData._id,
+          pedidoNumero,
+          categoria: "compra",
+          producto: productoTitulo,
+          estado: EstadoPedido.Pendiente,
+          fecha,
+        });
 
-        mensaje = `El usuario ${destinatario} ha realizado un pedido.\nProductos: ${productos}\nTotal: ${total} ${pedido.getMoneda()}\nDirección: ${direccion}`;
+        // Notificación para el vendedor
+        notificaciones.push({
+          userId: pedidoData.vendedor?._id || pedidoData.vendedor,
+          tipo: "confirmacion_pedido",
+          mensaje: `Tienes un nuevo pedido ${pedidoNumero}`,
+          pedidoId: pedidoData._id,
+          pedidoNumero,
+          categoria: "venta",
+          producto: productoTitulo,
+          estado: EstadoPedido.Pendiente,
+          fecha,
+        });
+
+        return notificaciones;
       },
       [EstadoPedido.Enviado]: () => {
-        mensaje = this.crearSegunEstadoPedido(pedido.getEstado());
-        destinatario = pedido.getComprador();
+        // Notificación para el comprador
+        return [{
+          userId: pedidoData.comprador?._id || pedidoData.comprador,
+          tipo: "pedido_enviado",
+          mensaje: `Tu pedido ${pedidoNumero} fue enviado`,
+          pedidoId: pedidoData._id,
+          pedidoNumero,
+          categoria: "compra",
+          producto: productoTitulo,
+          estado: EstadoPedido.Enviado,
+          fecha,
+        }];
       },
       [EstadoPedido.Cancelado]: () => {
-        destinatario = pedido.getVendedor();
-        mensaje = this.crearSegunEstadoPedido(pedido.getEstado());
+        // Notificación para el vendedor
+        return [{
+          userId: pedidoData.vendedor?._id || pedidoData.vendedor,
+          tipo: "pedido_cancelado",
+          mensaje: `El pedido ${pedidoNumero} fue cancelado`,
+          pedidoId: pedidoData._id,
+          pedidoNumero,
+          categoria: "venta",
+          producto: productoTitulo,
+          estado: EstadoPedido.Cancelado,
+          fecha,
+        }];
       },
     };
 
-    const handler = estadoHandlers[pedido.getEstado()];
-    if (handler) {
-      handler();
-    } else {
+    const handler = handlers[estado];
+    if (!handler) {
       throw new Error(
-        `Estado de pedido no manejado para notificación: ${pedido.getEstado()}`,
+        `Estado de pedido no manejado para notificación: ${estado}`,
       );
     }
 
-    return new Notificacion(
-      crypto.randomUUID(),
-      destinatario,
-      mensaje,
-      new Date(),
-    );
+    return handler();
   }
 }

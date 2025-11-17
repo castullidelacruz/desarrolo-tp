@@ -4,8 +4,10 @@ import "./NotificationsBell.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../store/AuthContext";
-
-const API_BASE_URL = "http://localhost:8000";
+import {
+  fetchNotifications,
+  marcarLeida,
+} from "../../services/notificationService.js";
 
 export default function NotificationsBell() {
   const [open, setOpen] = useState(false);
@@ -29,22 +31,17 @@ export default function NotificationsBell() {
   useEffect(() => {
     if (!isAuthenticated || !user) return;
 
-    let mounted = true;
-    const fetchNotifications = async () => {
+    const notificaciones = async () => {
       try {
-        const res = await axios.get(
-          `${API_BASE_URL}/notificaciones/usuario/${user._id}`,
-        );
-        if (!mounted) return;
-        const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+        const res = await fetchNotifications(user._id);
+        const data = Array.isArray(res) ? res : res.data || [];
         setNotifications(data);
       } catch (err) {
         console.error("Error al cargar notificaciones:", err);
         setNotifications([]);
       }
     };
-    fetchNotifications();
-    return () => (mounted = false);
+    notificaciones();
   }, [user, isAuthenticated]);
 
   const unreadCount = notifications.filter((n) => !n.leida).length;
@@ -92,7 +89,7 @@ export default function NotificationsBell() {
           .slice(0, 3)
           .map(
             (i) =>
-              `${i.producto?.titulo || i.producto?.nombre || "Producto"}${i.cantidad ? " x " + i.cantidad : ""}`,
+              `${i.producto?.titulo || i.producto?.nombre || "Producto"}${i.cantidad ? " x " + i.cantidad : ""}`
           )
           .join(", ") + (n.pedidoId.items.length > 3 ? "..." : "")
       );
@@ -105,7 +102,7 @@ export default function NotificationsBell() {
           .slice(0, 3)
           .map(
             (i) =>
-              `${i.producto?.titulo || i.producto?.nombre || i.nombre || "Producto"}${i.cantidad ? " x " + i.cantidad : ""}`,
+              `${i.producto?.titulo || i.producto?.nombre || i.nombre || "Producto"}${i.cantidad ? " x " + i.cantidad : ""}`
           )
           .join(", ") + (n.items.length > 3 ? "..." : "")
       );
@@ -121,17 +118,19 @@ export default function NotificationsBell() {
   //Onclick!
   const onNotificationClick = (n) => {
     setNotifications((prev) =>
-      prev.map((x) => (x === n ? { ...x, leida: true } : x)),
+      prev.map((x) => (x === n ? { ...x, leida: true } : x))
     );
 
     const id = n._id || n.id;
     if (id) {
-      axios.patch(`${API_BASE_URL}/notificaciones/${id}/leida`).catch((err) => {
+      try {
+        marcarLeida(id);
+      } catch (err) {
         console.warn(
           "No se pudo marcar notificación como leída en backend",
-          err?.message || err,
+          err?.message || err
         );
-      });
+      }
     }
 
     const pedidoNumero =
@@ -161,7 +160,7 @@ export default function NotificationsBell() {
   const totalPages = Math.max(1, Math.ceil(notifications.length / pageSize));
   const visibleNotifications = notifications.slice(
     (currentPage - 1) * pageSize,
-    currentPage * pageSize,
+    currentPage * pageSize
   );
 
   const grouped = visibleNotifications.reduce(
@@ -171,7 +170,7 @@ export default function NotificationsBell() {
       acc[key].push(n);
       return acc;
     },
-    { compras: [], ventas: [] },
+    { compras: [], ventas: [] }
   );
 
   return (
@@ -209,7 +208,7 @@ export default function NotificationsBell() {
                   </div>
                   <div className="notif-product">{getProductSummary(n)}</div>
                   <div className="notif-meta">
-                    {n.pedidoId?.estado || n.estado || ""} •{" "}
+                    {n.estado || n.pedidoId.estado || ""} •{" "}
                     {formatDate(n.createdAt || n.fecha)}
                   </div>
                 </div>
@@ -237,7 +236,7 @@ export default function NotificationsBell() {
                   </div>
                   <div className="notif-product">{getProductSummary(n)}</div>
                   <div className="notif-meta">
-                    {n.pedidoId?.estado || n.estado || ""} •{" "}
+                    {n.estado || n.pedidoId.estado || ""} •{" "}
                     {formatDate(n.createdAt || n.fecha)}
                   </div>
                 </div>

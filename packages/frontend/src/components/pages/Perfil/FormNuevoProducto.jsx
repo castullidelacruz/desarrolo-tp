@@ -26,6 +26,7 @@ import {
 } from "@mui/material";
 import { PhotoCamera, Delete, ArrowBack } from "@mui/icons-material";
 import { categorias } from "../../../mockdata/categorias.js";
+import { notify } from "../../common/NotificationCenter.jsx";
 
 const FormNuevoProducto = () => {
   const navigate = useNavigate();
@@ -86,8 +87,9 @@ const FormNuevoProducto = () => {
     const availableSlots = maxAllowed - currentCount;
 
     if (newFiles.length > availableSlots) {
-      alert(
+      notify(
         `Solo puedes subir un máximo de ${maxAllowed} fotos. Seleccionaste ${newFiles.length} nuevas, pero solo quedan ${availableSlots} espacios.`,
+        { severity: "warning" },
       );
       return; // Detener la subida si excede el límite
     }
@@ -104,8 +106,9 @@ const FormNuevoProducto = () => {
     );
 
     if (invalidFiles.length > 0) {
-      alert(
+      notify(
         `Solo se permiten archivos de imagen (JPEG, PNG, WebP).\n\nArchivos rechazados:\n${invalidFiles.map((f) => f.name).join("\n")}`,
+        { severity: "error" },
       );
       e.target.value = null; // Limpiar el input
       return;
@@ -116,8 +119,11 @@ const FormNuevoProducto = () => {
     const oversizedFiles = newFiles.filter((file) => file.size > maxSize);
 
     if (oversizedFiles.length > 0) {
-      alert(
-        `Algunos archivos exceden el tamaño máximo de 5MB:\n\n${oversizedFiles.map((f) => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)}MB)`).join("\n")}`,
+      notify(
+        `Algunos archivos exceden el tamaño máximo de 5MB:\n\n${oversizedFiles
+          .map((f) => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)}MB)`) 
+          .join("\n")}`,
+        { severity: "error" },
       );
       e.target.value = null; // Limpiar el input
       return;

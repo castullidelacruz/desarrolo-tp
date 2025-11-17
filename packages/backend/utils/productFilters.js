@@ -47,6 +47,11 @@ function buildMonedaFilter(monedaValue) {
   return { moneda: { $eq: monedaValue } };
 }
 
+function buildActivoFilter(activo) {
+  if (activo === undefined) return {};
+  return { activo: activo === "true" };
+}
+
 export function buildMongoQuery(filters) {
   const {
     vendedor,
@@ -56,6 +61,7 @@ export function buildMongoQuery(filters) {
     maxPrice,
     minPrice,
     moneda,
+    activo,
   } = filters;
 
   const query = {};
@@ -66,6 +72,7 @@ export function buildMongoQuery(filters) {
   Object.assign(query, buildDescripcionFilter(descripcion));
   Object.assign(query, buildCategoriaFilter(categorias));
   Object.assign(query, buildMonedaFilter(moneda));
+  Object.assign(query, buildActivoFilter(activo));
 
   // Para los filters de precio, combinarlos en un solo objeto
   const precioFilter = {};

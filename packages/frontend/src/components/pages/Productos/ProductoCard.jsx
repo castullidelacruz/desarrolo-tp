@@ -3,6 +3,7 @@ import "./Productos.css";
 import PropTypes from "prop-types";
 import { transformCurrencySymbol } from "../../../utils/utils.js";
 import ImageProduct from "../../shared/ImageProduct/ImageProduct.jsx";
+import { notify } from "../../common/NotificationCenter.jsx";
 
 const ProductCard = ({ prod, actualizarCarrito, navigate }) => {
   const handleVerDetalles = () => {
@@ -10,12 +11,7 @@ const ProductCard = ({ prod, actualizarCarrito, navigate }) => {
   };
 
   const handleAddToCart = () => {
-    const ok = actualizarCarrito(prod, 1);
-
-    if (!ok) {
-      return;
-    }
-    alert(`Producto "${prod.titulo || prod.nombre}" añadido al carrito.`);
+    actualizarCarrito(prod, 1);
   };
 
   const productPrice = prod.precio || "N/A";

@@ -15,6 +15,7 @@ import Checkout from "./components/pages/Carrito/checkout/Checkout";
 import CarritoWrapper from "./components/pages/Carrito/CarritoWrapper";
 import { AuthProvider } from "./store/AuthContext";
 import { CarritoProvider } from "./components/pages/Carrito/CarritoContext";
+import NotificationCenter from "./components/common/NotificationCenter.jsx";
 
 const theme = createTheme({
   palette: {
@@ -44,6 +45,7 @@ function App() {
               <Route path="/nuevo-producto" element={<FormNuevoProducto />} />
             </Routes>
           </BrowserRouter>
+          <NotificationCenter />
         </CarritoProvider>
       </AuthProvider>
     </ThemeProvider>

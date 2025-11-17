@@ -26,6 +26,14 @@ body {
   border-bottom: 1px solid #f0f0f0;
 }
 
+/* Header con título a la izquierda y vendedor a la derecha */
+.product-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .product-nombre {
   font-size: 24px;
   font-weight: 700;
@@ -105,11 +113,12 @@ body {
   margin-bottom: 12px;
 }
 
-.product-seller-section {
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  text-align: center;
+/* Bloque de vendedor en header */
+.product-seller-header {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  text-align: right;
 }
 
 .product-puntaje {
@@ -166,15 +175,9 @@ body {
     text-align: left;
   }
 
-  /* En mobile: poner descripción y vendedor en columna (flujo normal) */
-  .details-col-description {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
 
   .product-seller-section {
-    position: static; /* quitar absolute */
+    position: static; 
     top: auto;
     right: auto;
     text-align: left;

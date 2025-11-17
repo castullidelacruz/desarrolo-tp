@@ -97,10 +97,6 @@ export class ProductController {
     const productData = req.body;
     const files = req.files;
 
-    console.log("=== CREATE PRODUCTO ===");
-    console.log("Body:", productData);
-    console.log("Files:", files);
-
     // Validar que si hay archivos, sean imágenes válidas
     if (files && files.length > 0) {
       const validImageTypes = [
@@ -135,8 +131,6 @@ export class ProductController {
           ? JSON.parse(productData.categorias)
           : [],
     };
-
-    console.log("Datos transformados:", transformedData);
 
     const validation = newProductSchema.safeParse(transformedData);
     if (!validation.success) {

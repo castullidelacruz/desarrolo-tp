@@ -5,6 +5,7 @@ import ProductNotFound from "../errors/productNotFound.js";
 import UserNotFound from "../errors/userNotFound.js";
 import mongoose from "mongoose";
 import ProductNotStock from "../errors/productNotStock.js";
+import { FactoryNotificacion } from "../models/entities/FactoryNotificacion.js";
 
 export class PedidoService {
   constructor(
@@ -17,6 +18,7 @@ export class PedidoService {
     this.productRepository = productRepository;
     this.usuarioRepository = usuarioRepository;
     this.notificacionService = notificacionService;
+    this.factoryNotificacion = new FactoryNotificacion("ES");
   }
 
   async save(data) {
@@ -78,7 +80,17 @@ export class PedidoService {
 
     const saved = await this.pedidoRepository.save(pedido);
 
-    // Crear notificaciones para comprador y vendedor
+    // Actualizar stock de los productos
+    for (const item of itemsValidados) {
+      const producto = await this.productRepository.findById(item.producto);
+      if (!producto) throw new ProductNotFound();
+
+      const nuevoStock = producto.stock - item.cantidad;
+
+      await this.productRepository.update(producto._id, { stock: nuevoStock });
+    }
+
+    // Crear notificaciones para comprador y vendedor usando el Factory
     try {
       if (this.notificacionService) {
         const pedidoNumero = `#${saved._id}`;
@@ -87,31 +99,29 @@ export class PedidoService {
           saved.fechaCreacion ||
           new Date();
 
-        // Notificación para el comprador (confirmación de pedido)
-        await this.notificacionService.crear(
-          saved.comprador,
-          "confirmacion_pedido",
-          `Tu pedido ${pedidoNumero} fue generado con éxito! Recibirás una notificación cuando el vendedor confirme el envío.`,
-          saved._id,
+        // Usar el factory para crear las notificaciones
+        const notificaciones = this.factoryNotificacion.crearNotificacionDB(
+          saved,
+          EstadoPedido.Pendiente,
           pedidoNumero,
-          "compra",
           primerProductoTitulo,
-          fechaCreacion,
-          saved.estado,
+          fechaCreacion
         );
 
-        // Notificación para el vendedor (nuevo pedido)
-        await this.notificacionService.crear(
-          saved.vendedor,
-          "confirmacion_pedido",
-          `Tienes un nuevo pedido ${pedidoNumero}`,
-          saved._id,
-          pedidoNumero,
-          "venta",
-          primerProductoTitulo,
-          fechaCreacion,
-          saved.estado,
-        );
+        // Crear cada notificación en la base de datos
+        for (const notifData of notificaciones) {
+          await this.notificacionService.crear(
+            notifData.userId,
+            notifData.tipo,
+            notifData.mensaje,
+            notifData.pedidoId,
+            notifData.pedidoNumero,
+            notifData.categoria,
+            notifData.producto,
+            notifData.fecha,
+            notifData.estado,
+          );
+        }
       }
     } catch (err) {
       console.error("Error creando notificaciones de pedido:", err);
@@ -168,19 +178,30 @@ export class PedidoService {
             .find((h) => h.estado === EstadoPedido.Cancelado) ||
           (pedidoActualizado.historialEstados || []).slice(-1)[0];
         const fechaCancelado = cambioCancelado?.fecha || new Date();
-
-        // Crear NUEVA notificación para el vendedor (NO actualizar la existente)
-        await this.notificacionService.crear(
-          vendedorId,
-          "pedido_cancelado",
-          `El pedido ${pedidoNumero} fue cancelado`,
-          pedidoActualizado._id,
-          pedidoNumero,
-          "venta",
-          productoTitulo,
-          fechaCancelado,
+        
+        // Usar el factory para crear la notificación de cancelación
+        const notificaciones = this.factoryNotificacion.crearNotificacionDB(
+          pedidoActualizado,
           EstadoPedido.Cancelado,
+          pedidoNumero,
+          productoTitulo,
+          fechaCancelado
         );
+
+        // Crear cada notificación en la base de datos
+        for (const notifData of notificaciones) {
+          await this.notificacionService.crear(
+            notifData.userId,
+            notifData.tipo,
+            notifData.mensaje,
+            notifData.pedidoId,
+            notifData.pedidoNumero,
+            notifData.categoria,
+            notifData.producto,
+            notifData.fecha,
+            notifData.estado,
+          );
+        }
       }
     } catch (err) {
       console.error("Error creando notificación de pedido cancelado:", err);
@@ -240,17 +261,30 @@ export class PedidoService {
             .find((h) => h.estado === EstadoPedido.Enviado) ||
           (pedidoActualizado.historialEstados || []).slice(-1)[0];
         const fechaEnviado = cambioEnviado?.fecha || new Date();
-        await this.notificacionService.crear(
-          pedidoActualizado.comprador,
-          "pedido_enviado",
-          `Tu pedido ${pedidoNumero} fue enviado`,
-          pedidoActualizado._id,
+        
+        // Usar el factory para crear la notificación de envío
+        const notificaciones = this.factoryNotificacion.crearNotificacionDB(
+          pedidoActualizado,
+          EstadoPedido.Enviado,
           pedidoNumero,
-          "compra",
           primerProductoTitulo,
-          fechaEnviado,
-          pedidoActualizado.estado,
+          fechaEnviado
         );
+
+        // Crear cada notificación en la base de datos
+        for (const notifData of notificaciones) {
+          await this.notificacionService.crear(
+            notifData.userId,
+            notifData.tipo,
+            notifData.mensaje,
+            notifData.pedidoId,
+            notifData.pedidoNumero,
+            notifData.categoria,
+            notifData.producto,
+            notifData.fecha,
+            notifData.estado,
+          );
+        }
       }
     } catch (err) {
       console.error("Error creando notificación de pedido enviado:", err);

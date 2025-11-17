@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import { getPedidos, cancelarPedido } from "../../../services/pedidoService.js";
 import { useAuth } from "../../../store/AuthContext";
+import { notify } from "../../common/NotificationCenter.jsx";
+import ConfirmDialog from "../../common/ConfirmDialog.jsx";
 
 const TabMisCompras = ({ abrirDetallePedido }) => {
   const { token, isAuthenticated, loading: authLoading } = useAuth();
@@ -22,6 +24,7 @@ const TabMisCompras = ({ abrirDetallePedido }) => {
   const [error, setError] = useState(null);
   const [canceling, setCanceling] = useState(null);
   const [showCancelToast, setShowCancelToast] = useState(false);
+  const [confirm, setConfirm] = useState({ open: false, pedidoId: null });
 
   useEffect(() => {
     if (authLoading || !isAuthenticated) return;
@@ -76,8 +79,15 @@ const TabMisCompras = ({ abrirDetallePedido }) => {
     return `${simbolos[moneda] || ""} ${precio?.toFixed(2)}`;
   };
 
+  const requestCancelarPedido = (pedidoId) => setConfirm({ open: true, pedidoId });
+  const confirmCancelarPedido = async () => {
+    const pedidoId = confirm.pedidoId;
+    setConfirm({ open: false, pedidoId: null });
+    if (!pedidoId) return;
+    await handleCancelarPedido(pedidoId);
+  };
+
   const handleCancelarPedido = async (pedidoId) => {
-    if (!window.confirm("¿Seguro que deseas cancelar este pedido?")) return;
     try {
       setCanceling(pedidoId);
       await cancelarPedido(pedidoId);
@@ -97,7 +107,7 @@ const TabMisCompras = ({ abrirDetallePedido }) => {
         setShowCancelToast(false);
       }, 2000);
     } catch (e) {
-      alert(e.message || "No se pudo cancelar el pedido.");
+      notify(e.message || "No se pudo cancelar el pedido.", { severity: "error" });
     } finally {
       setCanceling(null);
     }
@@ -105,6 +115,16 @@ const TabMisCompras = ({ abrirDetallePedido }) => {
 
   return (
     <Box p={3}>
+      <ConfirmDialog
+        open={confirm.open}
+        title="Cancelar pedido"
+        description="¿Seguro que deseas cancelar este pedido?"
+        confirmText="Cancelar pedido"
+        cancelText="Volver"
+        confirmColor="error"
+        onConfirm={confirmCancelarPedido}
+        onClose={() => setConfirm({ open: false, pedidoId: null })}
+      />
       {/* Toast de cancelación exitosa */}
       {showCancelToast && (
         <Box
@@ -209,14 +229,14 @@ const TabMisCompras = ({ abrirDetallePedido }) => {
                   </Box>
                 </CardContent>
 
-                {pedido.estado === "PENDIENTE" && (
+                {pedido.estado === "PENDIENTE" || pedido.estado === "CONFIRMADO" && (
                   <Box px={2} pb={2}>
                     <Button
                       variant="outlined"
                       color="error"
                       size="small"
                       disabled={canceling === pedido._id}
-                      onClick={() => handleCancelarPedido(pedido._id)}
+                      onClick={() => requestCancelarPedido(pedido._id)}
                     >
                       {canceling === pedido._id
                         ? "Cancelando..."

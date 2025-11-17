@@ -26,6 +26,7 @@ import TabMisProductos from "./TabMisProductos";
 import "./Perfil.css";
 import { useAuth } from "../../../store/AuthContext.jsx";
 import { getPedidos, getPedidoById } from "../../../services/pedidoService.js";
+import ConfirmDialog from "../../common/ConfirmDialog.jsx";
 
 const Perfil = () => {
   const [tabActual, setTabActual] = useState(0);
@@ -36,6 +37,7 @@ const Perfil = () => {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [pedidosCompra, setPedidosCompra] = useState([]);
   const [pedidosVenta, setPedidosVenta] = useState([]);
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -136,6 +138,11 @@ const Perfil = () => {
   };
 
   const handleLogout = () => {
+    setConfirmLogout(true);
+  };
+
+  const confirmLogoutAction = () => {
+    setConfirmLogout(false);
     logout();
     navigate("/login", { replace: true });
   };
@@ -163,6 +170,16 @@ const Perfil = () => {
 
   return (
     <div className="perfil-container">
+      <ConfirmDialog
+        open={confirmLogout}
+        title="Cerrar sesión"
+        description="¿Estás seguro que deseas cerrar sesión?"
+        confirmText="Cerrar sesión"
+        cancelText="Cancelar"
+        confirmColor="error"
+        onConfirm={confirmLogoutAction}
+        onClose={() => setConfirmLogout(false)}
+      />
       {/* === Datos del usuario === */}
       <Card className="perfil-card-usuario">
         <CardContent>

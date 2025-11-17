@@ -16,6 +16,7 @@ export const getProductos = async ({
   limit = 20,
   moneda,
   orderby,
+  activo = true,
 } = {}) => {
   const params = {};
 
@@ -31,6 +32,7 @@ export const getProductos = async ({
   if (limit !== undefined && limit !== null) params.limit = Number(limit);
   if (moneda) params.moneda = moneda;
   if (orderby) params.orderby = orderby;
+  if (activo !== undefined && activo !== null) params.activo = activo;
 
   return await apiCall("/productos", {
     method: "GET",

@@ -42,9 +42,63 @@ const Checkout = () => {
   const [codigoPostal, setCodigoPostal] = useState("");
   const [provincia, setProvincia] = useState("");
 
+  // Estados de validación
+  const [errors, setErrors] = useState({
+    email: "",
+    calle: "",
+    altura: "",
+    codigoPostal: "",
+    provincia: "",
+  });
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Validar email
+    if (!email || !email.trim()) {
+      newErrors.email = "El email es obligatorio";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Ingresa un email válido";
+    }
+
+    // Validar calle
+    if (!calle || !calle.trim()) {
+      newErrors.calle = "La calle es obligatoria";
+    }
+
+    // Validar altura
+    if (!altura || !altura.trim()) {
+      newErrors.altura = "La altura es obligatoria";
+    } else if (Number(altura) <= 0) {
+      newErrors.altura = "La altura debe ser mayor a 0";
+    }
+
+    // Validar código postal
+    if (!codigoPostal || !codigoPostal.trim()) {
+      newErrors.codigoPostal = "El código postal es obligatorio";
+    } else if (Number(codigoPostal) <= 0) {
+      newErrors.codigoPostal = "El código postal debe ser válido";
+    }
+
+    // Validar provincia
+    if (!provincia || !provincia.trim()) {
+      newErrors.provincia = "La provincia es obligatoria";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleConfirmarCompra = async () => {
     setError("");
     setSuccess("");
+
+    // Validar formulario antes de proceder
+    if (!validateForm()) {
+      setError("Por favor, completa todos los campos obligatorios correctamente.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -182,8 +236,15 @@ const Checkout = () => {
               margin="normal"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) {
+                  setErrors({ ...errors, email: "" });
+                }
+              }}
               variant="outlined"
+              error={!!errors.email}
+              helperText={errors.email}
             />
 
             {/* CAMPOS DE ENTREGA */}
@@ -194,7 +255,14 @@ const Checkout = () => {
               fullWidth
               margin="normal"
               value={calle}
-              onChange={(e) => setCalle(e.target.value)}
+              onChange={(e) => {
+                setCalle(e.target.value);
+                if (errors.calle) {
+                  setErrors({ ...errors, calle: "" });
+                }
+              }}
+              error={!!errors.calle}
+              helperText={errors.calle}
             />
             <TextField
               label="Altura"
@@ -204,7 +272,14 @@ const Checkout = () => {
               fullWidth
               margin="normal"
               value={altura}
-              onChange={(e) => setAltura(e.target.value)}
+              onChange={(e) => {
+                setAltura(e.target.value);
+                if (errors.altura) {
+                  setErrors({ ...errors, altura: "" });
+                }
+              }}
+              error={!!errors.altura}
+              helperText={errors.altura}
             />
             <TextField
               label="Código Postal"
@@ -214,7 +289,14 @@ const Checkout = () => {
               fullWidth
               margin="normal"
               value={codigoPostal}
-              onChange={(e) => setCodigoPostal(e.target.value)}
+              onChange={(e) => {
+                setCodigoPostal(e.target.value);
+                if (errors.codigoPostal) {
+                  setErrors({ ...errors, codigoPostal: "" });
+                }
+              }}
+              error={!!errors.codigoPostal}
+              helperText={errors.codigoPostal}
             />
             <TextField
               label="Provincia"
@@ -223,7 +305,14 @@ const Checkout = () => {
               required
               margin="normal"
               value={provincia}
-              onChange={(e) => setProvincia(e.target.value)}
+              onChange={(e) => {
+                setProvincia(e.target.value);
+                if (errors.provincia) {
+                  setErrors({ ...errors, provincia: "" });
+                }
+              }}
+              error={!!errors.provincia}
+              helperText={errors.provincia}
             />
 
             {error && (
@@ -282,7 +371,7 @@ const Checkout = () => {
             <Button
               variant="contained"
               onClick={handleConfirmarCompra}
-              disabled={loading || !email}
+              disabled={loading}
               className="button-continue"
             >
               {loading ? "Procesando..." : "Confirmar compra"}

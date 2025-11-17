@@ -31,6 +31,16 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
 }
+
+.auth-input-error {
+  border-color: #c33;
+}
+
+.auth-input-error:focus {
+  outline: 2px solid #c33;
+  outline-offset: 2px;
+}
+
 .auth-actions {
   display: grid;
   gap: 0.5rem;

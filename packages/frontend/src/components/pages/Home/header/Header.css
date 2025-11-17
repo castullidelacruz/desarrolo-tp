@@ -1,0 +1,19 @@
+.header {
+  background: linear-gradient(180deg, #fff1a7, #fffbea);
+  border: 1px solid #f1e3a4;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 1rem 0 1.25rem 0;
+  text-align: center;
+}
+
+.header__title {
+  margin: 0;
+  color: #92400e;
+  font-size: 2rem;
+}
+
+.header__subtitle {
+  margin-top: 0.5rem;
+  color: #6b7280;
+}

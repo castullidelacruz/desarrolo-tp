@@ -1,0 +1,210 @@
+.carousel-container {
+  max-width: 68.75rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.carousel-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+.carousel-wrapper {
+  position: relative;
+}
+
+.carousel-viewport {
+  overflow: hidden;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
+  flex-wrap: nowrap;
+  will-change: transform;
+}
+
+/* --- ESTILOS DE LA TARJETA (.carousel-card es el contenedor flexible) --- */
+.carousel-card {
+  /* Dynamic item width via JS-set CSS variable --visible */
+  flex: 0 0 calc(100% / var(--visible));
+  padding: 0.5rem;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: flex-basis 0.25s ease;
+}
+
+.product-card {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.product-image {
+  width: 100%;
+  height: 11.875rem;
+  object-fit: fill;
+}
+
+.product-info {
+  padding: 1rem;
+}
+
+.product-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.product-location {
+  font-size: 0.9rem;
+  color: #777;
+  margin-top: 0.25rem;
+}
+
+.product-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+/* --- DETALLES DE PRODUCTO/SCORE/PRICE --- */
+
+.product-score {
+  background-color: #1e40af;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.ver-detalles {
+  background-color: var(--primary-purple);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.product-price {
+  font-weight: 600;
+  color: #111;
+}
+
+.ver-detalles-container {
+  display: flex;
+  justify-content: right;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
+  z-index: 2; /* ensure buttons stay above cards */
+}
+
+.carousel-btn:hover {
+  background-color: #f3f3f3;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.left-btn {
+  left: 0.5rem;
+}
+
+.right-btn {
+  right: 0.5rem;
+}
+
+/* Removed old conflicting 4-item breakpoint (1025px-1200px) to keep iPad Pro portrait at 3 items */
+
+@media (max-width: 64rem) {
+  .product-image {
+    height: 10.625rem; /* 170px */
+  }
+
+  .product-name {
+    font-size: 1rem;
+  }
+
+  .product-info {
+    padding: 0.75rem;
+  }
+}
+
+/* New breakpoint: medium tablets / iPad landscape variants wanting 2 items */
+/* Removed fixed width breakpoint at 900px; width now auto-calculated */
+
+/* iPad Pro landscape (1366px) should still be 3 items -> already covered by base width 33.33% */
+/* Only on very large desktops show 4 items */
+/* Removed large desktop fixed width breakpoint; JS logic decides visible count */
+
+/* Orientation tweaks (optional) - keep 3 items in landscape under 1600px */
+/* Removed orientation-based width tweak for consistency */
+
+@media (max-width: 48rem) {
+  .product-image {
+    height: 9.375rem; /* 150px */
+  }
+
+  .product-name {
+    font-size: 0.95rem;
+  }
+
+  .product-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .ver-detalles-container {
+    justify-content: flex-start;
+    margin-top: 0.5rem;
+  }
+
+  .carousel-btn {
+    width: 32px;
+    height: 32px;
+  }
+  .left-btn {
+    left: 0.25rem;
+  }
+  .right-btn {
+    right: 0.25rem;
+  }
+}
+
+@media (max-width: 34.375rem) {
+  .product-card {
+    box-shadow: none;
+    border: 0.0625rem solid #eee;
+  }
+}

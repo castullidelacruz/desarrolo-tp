@@ -1,0 +1,141 @@
+:root {
+  --color-brand: #4a3f2b;
+  --color-accent: #ff61da;
+  --color-link: #4a3f2b;
+  --color-link-hover: #7b5e40;
+}
+
+.navbar-bg {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #fffbdb;
+  border-bottom: 0.0625rem solid #f1e3a4; /* 1px */
+  font-size: 1rem;
+  color: var(--color-brand);
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  min-height: 4.375rem;
+}
+
+.navbar-section.center {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.navbar-section.center h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.navbar-section.right.main-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.menu-items ul {
+  list-style: none;
+  display: flex;
+  gap: 1.875rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-items a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.menu-items a:hover {
+  color: var(--color-link-hover);
+}
+
+.cart {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+  font-size: 1.5rem;
+  position: relative;
+}
+.cart:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.cart-count {
+  position: absolute;
+  top: 0.1rem;
+  right: 0.1rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: white;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  width: 1.2rem;
+  height: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-section.left {
+  display: none;
+}
+
+@media (max-width: 64rem) {
+  .menu-items ul {
+    gap: 1.25rem;
+  }
+
+  .navbar {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  .navbar {
+    min-height: 3.5rem;
+    padding: 0 0.8rem;
+  }
+
+  .navbar-section.center h1 {
+    font-size: 1.3rem;
+  }
+
+  .navbar-section.right.main-actions {
+    gap: 0.8rem;
+  }
+
+  .menu-items ul {
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .cart {
+    font-size: 1.3rem;
+    padding: 0.3rem;
+  }
+
+  .cart-count {
+    top: 0.2rem;
+    right: 0.2rem;
+    width: 1rem;
+    height: 1rem;
+    font-size: 0.6rem;
+  }
+}

@@ -1,0 +1,249 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.4;
+}
+
+.product-detail-container {
+  max-width: 100rem;
+  margin: 20px auto;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.product-header {
+  padding: 20px 24px 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.product-nombre {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-purple);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.product-ubicacion {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 400;
+}
+
+.product-ubicacion::before {
+  margin-right: 4px;
+}
+
+.product-content {
+  display: flex;
+  padding: 0;
+}
+
+.product-image-section {
+  flex: 0 0 560px;
+  position: relative;
+  padding: 20px;
+}
+
+/* La galería maneja sus propias dimensiones */
+
+.gallery-button {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.product-info-section {
+  flex: 1;
+  padding: 20px 24px;
+  position: relative;
+}
+
+.product-description {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 16px;
+  font-weight: 500;
+  width: 90%;
+}
+
+.product-price-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.product-precio {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.product-price-details {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.product-seller-section {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  text-align: center;
+}
+
+.product-puntaje {
+  background-color: var(--primary-purple);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  min-width: 50px;
+}
+
+.rating-text {
+  font-size: 12px;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.buy {
+  background-color: var(--primary-purple);
+  color: rgb(3, 2, 2);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  min-width: 50px;
+  margin-right: 1rem;
+}
+
+.buy-container {
+  display: flex;
+  justify-content: right;
+}
+
+@media (max-width: 768px) {
+  .product-content {
+    flex-direction: column;
+  }
+
+  .product-image-section {
+    flex: none;
+  }
+
+  .product-imagen {
+    height: 180px;
+  }
+
+  .product-rating-section {
+    position: static;
+    margin-top: 16px;
+    text-align: left;
+  }
+
+  /* En mobile: poner descripción y vendedor en columna (flujo normal) */
+  .details-col-description {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .product-seller-section {
+    position: static; /* quitar absolute */
+    top: auto;
+    right: auto;
+    text-align: left;
+    margin-top: 0;
+  }
+
+  .product-detail-container {
+    margin: 10px;
+    border-radius: 8px;
+  }
+
+  .product-header,
+  .product-info-section {
+    padding: 16px 20px;
+  }
+}
+
+.price-question:hover {
+  color: #004ba0;
+}
+
+/* Contenedor de las acciones de compra */
+.buy-actions {
+  display: flex;
+  justify-content: flex-end; /* Alinea los ítems (ButtonGroup y Button) a la derecha */
+  align-items: center; /* Centra verticalmente los elementos */
+  padding: 1rem 1.5rem; /* Padding inferior y lateral */
+  gap: 1.5rem; /* Espacio entre el grupo de botones y el botón Comprar */
+  border-top: 1px solid #f0f0f0; /* Separador claro */
+}
+
+/* Estilos para el botón de compra final */
+.btn-compra-final {
+  /* Basado en los estilos de .buy que me diste */
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: white;
+  padding: 0.75rem 1.5rem; /* Más padding para que sea más prominente */
+  border: none;
+  border-radius: 6px;
+  font-size: 1.125rem; /* 18px */
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 8rem;
+}
+
+.btn-compra-final:hover {
+  background: #d97706;
+  border-color: #d97706;
+}
+
+@media (max-width: 48rem) {
+  /* 768px */
+
+  .buy-actions {
+    flex-direction: column; /* Apila el contador y el botón */
+    align-items: stretch; /* Estira el botón para que ocupe todo el ancho */
+    padding: 1rem 1.25rem; /* Padding reducido */
+    gap: 1rem;
+  }
+
+  .btn-compra-final {
+    min-width: 100%;
+  }
+
+  .MuiButtonGroup-root {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}

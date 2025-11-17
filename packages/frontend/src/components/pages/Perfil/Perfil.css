@@ -1,0 +1,102 @@
+.perfil-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.perfil-card-usuario {
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px !important;
+}
+
+.perfil-card-usuario .MuiCardContent-root {
+  padding: 2rem !important;
+}
+
+.perfil-card-tabs {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.perfil-card-tabs .MuiTabs-root {
+  background-color: #f5f5f5;
+}
+
+.perfil-card-tabs .MuiTab-root {
+  text-transform: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 1rem 2rem;
+}
+
+.perfil-card-tabs .Mui-selected {
+  background-color: white;
+}
+
+/* Estilos para las cards de pedidos */
+.perfil-card-tabs .MuiCard-root {
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.perfil-card-tabs .MuiCard-root:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .perfil-container {
+    padding: 1rem;
+  }
+
+  .perfil-card-usuario .MuiCardContent-root {
+    padding: 1rem !important;
+  }
+
+  .perfil-card-usuario .MuiBox-root {
+    flex-direction: column;
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .perfil-card-tabs .MuiTab-root {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .perfil-card-tabs .MuiTab-root .MuiSvgIcon-root {
+    margin-bottom: 0;
+    margin-right: 0.5rem;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.perfil-card-usuario,
+.perfil-card-tabs {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Estilos para productos */
+.perfil-card-tabs .MuiGrid-item img {
+  transition: transform 0.3s;
+}
+
+.perfil-card-tabs .MuiGrid-item:hover img {
+  transform: scale(1.05);
+}

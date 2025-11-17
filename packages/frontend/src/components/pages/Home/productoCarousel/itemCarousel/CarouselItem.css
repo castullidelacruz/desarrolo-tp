@@ -1,0 +1,150 @@
+.carousel-card {
+  width: 33.3333%;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.product-card {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.product-info {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.product-location {
+  font-size: 0.9rem;
+  color: #777;
+  margin-top: 0.25rem;
+}
+
+.product-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.product-seller {
+  background-color: var(--primary-purple);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.ver-detalles {
+  margin-top: 2px;
+  background-color: var(--primary-purple);
+  color: var(--primary-brown);
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.product-price {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #605f5f;
+}
+
+.ver-detalles-container {
+  display: flex;
+  justify-content: right;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-details {
+  border-color: #ccc;
+  color: #555;
+}
+
+.btn-details:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1024px) {
+  /* Tablets / small laptops: 2 items per row */
+  .carousel-card {
+    width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Portrait tablets / large phones: keep 2 items */
+  .carousel-card {
+    width: 50%;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Phones: single item per row */
+  .carousel-card {
+    width: 100%;
+    padding: 0.5rem 0.75rem; /* a bit more horizontal padding */
+  }
+  .product-card {
+    border-radius: 0.75rem;
+  }
+  .product-name {
+    font-size: 1rem;
+  }
+  .product-price {
+    font-size: 0.85rem;
+  }
+  .btn {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Optional: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .product-card,
+  .btn:hover {
+    transition: none;
+    transform: none;
+  }
+}

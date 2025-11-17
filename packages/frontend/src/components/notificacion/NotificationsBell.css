@@ -1,0 +1,125 @@
+.notifications-root {
+  position: relative;
+  display: inline-block;
+  margin-right: 12px;
+}
+
+.notifications-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  font-size: 20px;
+  color: #222;
+  padding: 6px;
+}
+
+.notifications-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #e53935;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+.notifications-panel {
+  position: absolute;
+  right: 0;
+  top: 36px;
+  width: 320px;
+  max-height: 420px;
+  overflow: auto;
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 12px;
+  z-index: 9999;
+}
+
+.notifications-panel h4 {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.notification-item {
+  display: flex;
+  padding: 8px 6px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item.no-leida {
+  background: #fafafa;
+}
+.notification-item.leida {
+  opacity: 0.7;
+}
+
+.notif-left {
+  display: flex;
+  flex-direction: column;
+}
+.notif-product {
+  font-weight: 600;
+  font-size: 13px;
+}
+.notif-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 4px;
+}
+.notif-product {
+  font-weight: 600;
+  font-size: 13px;
+  color: #444;
+}
+.notif-meta {
+  font-size: 12px;
+  color: #666;
+  margin-top: 6px;
+}
+
+.no-notifications {
+  padding: 8px;
+  color: #666;
+  font-size: 13px;
+}
+
+.notifications-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.page-btn {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.page-info {
+  font-size: 12px;
+  color: #444;
+}
+
+.notif-product {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}

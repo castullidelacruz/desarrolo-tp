@@ -1,0 +1,733 @@
+swagger: "2.0"
+info:
+  title: "E-commerce API"
+  description: "API para gestión de pedidos, productos y notificaciones en un sistema de e-commerce"
+  version: "1.0.0"
+  contact:
+    name: "UTN DSW Grupo 05"
+
+host: "localhost:3000"
+basePath: "/"
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+tags:
+  - name: "Health"
+    description: "Endpoints para verificar el estado de la API"
+  - name: "Productos"
+    description: "Gestión de productos del e-commerce"
+  - name: "Pedidos"
+    description: "Gestión de pedidos y órdenes de compra"
+  - name: "Notificaciones"
+    description: "Sistema de notificaciones para usuarios"
+  - name: "Auth"
+    description: "Autenticación de usuarios (login y registro)"
+
+paths:
+  /healthCheck:
+    get:
+      summary: "Health Check"
+      description: "Verifica el estado de salud de la API"
+      operationId: "healthCheck"
+      tags:
+        - Health
+      responses:
+        "200":
+          description: "API funcionando correctamente"
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "OK"
+
+  /auth/login:
+    post:
+      summary: "Iniciar sesión"
+      description: "Autentica a un usuario y devuelve un token de acceso"
+      operationId: "login"
+      tags:
+        - Auth
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/AuthLogin"
+      responses:
+        "200":
+          description: "Login exitoso"
+          schema:
+            $ref: "#/definitions/AuthLoginResponse"
+        "400":
+          description: "Datos de login inválidos"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /auth/register:
+    post:
+      summary: "Registro de usuario"
+      description: "Crea un nuevo usuario en el sistema"
+      operationId: "register"
+      tags:
+        - Auth
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/AuthRegister"
+      responses:
+        "201":
+          description: "Usuario creado exitosamente"
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: "#/definitions/Usuario"
+        "400":
+          description: "Datos de registro inválidos"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /productos/vendedor/{id}:
+    get:
+      summary: "Obtener productos por vendedor"
+      description: "Obtiene todos los productos de un vendedor específico con filtros opcionales"
+      operationId: "getProductsBySeller"
+      tags:
+        - Productos
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: "ID del vendedor"
+        - name: page
+          in: query
+          required: false
+          type: integer
+          minimum: 1
+          default: 1
+          description: "Número de página para paginación"
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+          description: "Cantidad de elementos por página"
+        - name: minPrice
+          in: query
+          required: false
+          type: number
+          minimum: 0
+          description: "Precio mínimo para filtrar productos (requiere parámetro moneda)"
+        - name: maxPrice
+          in: query
+          required: false
+          type: number
+          minimum: 0
+          description: "Precio máximo para filtrar productos (requiere parámetro moneda)"
+        - name: moneda
+          in: query
+          required: false
+          type: string
+          enum: ["PESO_ARG", "DOLAR_USA", "REAL"]
+          description: "Moneda para filtros de precio y ordenamiento"
+        - name: descripcion
+          in: query
+          required: false
+          type: string
+          description: "Filtrar por descripción del producto (búsqueda parcial)"
+        - name: nombre
+          in: query
+          required: false
+          type: string
+          description: "Filtrar por nombre del producto (búsqueda parcial)"
+        - name: orderby
+          in: query
+          required: false
+          type: string
+          enum: ["asc", "desc", "mas_vendido"]
+          description: "Ordenamiento: asc/desc por precio (requiere moneda), mas_vendido por popularidad"
+        - name: categorias
+          in: query
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+          description: "Filtrar por categorías específicas (se pueden enviar múltiples)"
+      responses:
+        "200":
+          description: "Lista de productos del vendedor filtrados y paginados"
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/Producto"
+              pagination:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  total:
+                    type: integer
+                  pages:
+                    type: integer
+        "400":
+          description: "Parámetros de consulta inválidos"
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: "Vendedor no encontrado"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /productos:
+    get:
+      summary: "Listar productos"
+      description: "Obtiene productos con filtros opcionales y paginación"
+      operationId: "getProducts"
+      tags:
+        - Productos
+      parameters:
+        - name: page
+          in: query
+          required: false
+          type: integer
+          minimum: 1
+          default: 1
+          description: "Número de página para paginación"
+        - name: limit
+          in: query
+          required: false
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+          description: "Cantidad de elementos por página"
+        - name: minPrice
+          in: query
+          required: false
+          type: number
+          minimum: 0
+          description: "Precio mínimo para filtrar productos (requiere parámetro moneda)"
+        - name: maxPrice
+          in: query
+          required: false
+          type: number
+          minimum: 0
+          description: "Precio máximo para filtrar productos (requiere parámetro moneda)"
+        - name: moneda
+          in: query
+          required: false
+          type: string
+          enum: ["PESO_ARG", "DOLAR_USA", "REAL"]
+          description: "Moneda para filtros de precio y ordenamiento"
+        - name: descripcion
+          in: query
+          required: false
+          type: string
+          description: "Filtrar por descripción del producto (búsqueda parcial)"
+        - name: nombre
+          in: query
+          required: false
+          type: string
+          description: "Filtrar por nombre del producto (búsqueda parcial)"
+        - name: orderby
+          in: query
+          required: false
+          type: string
+          enum: ["asc", "desc", "mas_vendido"]
+          description: "Ordenamiento: asc/desc por precio (requiere moneda), mas_vendido por popularidad"
+        - name: categorias
+          in: query
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+          description: "Filtrar por categorías específicas (se pueden enviar múltiples)"
+      responses:
+        "200":
+          description: "Lista de productos filtrados y paginados"
+          schema:
+            $ref: "#/definitions/ProductosPagedResponse"
+        "400":
+          description: "Parámetros de consulta inválidos"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /productos/{id}:
+    get:
+      summary: "Obtener producto por ID"
+      description: "Obtiene un producto específico por su ID"
+      operationId: "getProductById"
+      tags:
+        - Productos
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: "ID del producto"
+      responses:
+        "200":
+          description: "Producto encontrado"
+          schema:
+            $ref: "#/definitions/Producto"
+        "400":
+          description: "ID de producto inválido"
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: "Producto no encontrado"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /pedidos:
+    post:
+      summary: "Crear nuevo pedido"
+      description: "Crea un nuevo pedido en el sistema"
+      operationId: "crearPedido"
+      tags:
+        - Pedidos
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/PedidoCreate"
+      responses:
+        "201":
+          description: "Pedido creado exitosamente"
+          schema:
+            $ref: "#/definitions/Pedido"
+        "400":
+          description: "Datos de entrada inválidos"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /pedidos/{pedido_id}/cancelacion:
+    put:
+      summary: "Cancelar pedido"
+      description: "Cancela un pedido existente"
+      operationId: "cancelarPedido"
+      tags:
+        - Pedidos
+      parameters:
+        - name: pedido_id
+          in: path
+          required: true
+          type: string
+          description: "ID del pedido"
+      responses:
+        "200":
+          description: "Pedido cancelado exitosamente"
+          schema:
+            $ref: "#/definitions/Pedido"
+        "404":
+          description: "Pedido no encontrado"
+          schema:
+            $ref: "#/definitions/Error"
+        "400":
+          description: "El pedido no puede ser cancelado"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /pedidos/usuario/{usuario_id}:
+    get:
+      summary: "Obtener pedidos por usuario"
+      description: "Obtiene todos los pedidos de un usuario específico"
+      operationId: "obtenerPedidos"
+      tags:
+        - Pedidos
+      parameters:
+        - name: usuario_id
+          in: path
+          required: true
+          type: string
+          description: "ID del usuario"
+      responses:
+        "200":
+          description: "Lista de pedidos del usuario"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Pedido"
+        "404":
+          description: "Usuario no encontrado"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /pedidos/{pedido_id}/enviar/{usuario_id}:
+    patch:
+      summary: "Actualizar estado del pedido"
+      description: "Actualiza el estado de un pedido (marcar como enviado)"
+      operationId: "actualizarEstadoPedido"
+      tags:
+        - Pedidos
+      parameters:
+        - name: pedido_id
+          in: path
+          required: true
+          type: string
+          description: "ID del pedido"
+        - name: usuario_id
+          in: path
+          required: true
+          type: string
+          description: "ID del usuario"
+      responses:
+        "200":
+          description: "Estado del pedido actualizado"
+          schema:
+            $ref: "#/definitions/Pedido"
+        "404":
+          description: "Pedido no encontrado"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /notificaciones:
+    post:
+      summary: "Crear notificación"
+      description: "Crea una nueva notificación para un usuario"
+      operationId: "crearNotificacion"
+      tags:
+        - Notificaciones
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/NotificacionCreate"
+      responses:
+        "201":
+          description: "Notificación creada exitosamente"
+          schema:
+            $ref: "#/definitions/Notificacion"
+        "400":
+          description: "Datos de entrada inválidos"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /notificaciones/no-leidas/{userId}:
+    get:
+      summary: "Obtener notificaciones no leídas"
+      description: "Obtiene todas las notificaciones no leídas de un usuario"
+      operationId: "obtenerNotificacionesNoLeidas"
+      tags:
+        - Notificaciones
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+          description: "ID del usuario"
+      responses:
+        "200":
+          description: "Lista de notificaciones no leídas"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Notificacion"
+
+  /notificaciones/leidas/{userId}:
+    get:
+      summary: "Obtener notificaciones leídas"
+      description: "Obtiene todas las notificaciones leídas de un usuario"
+      operationId: "obtenerNotificacionesLeidas"
+      tags:
+        - Notificaciones
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+          description: "ID del usuario"
+      responses:
+        "200":
+          description: "Lista de notificaciones leídas"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Notificacion"
+
+  /notificaciones/{id}/leida:
+    patch:
+      summary: "Marcar notificación como leída"
+      description: "Marca una notificación específica como leída"
+      operationId: "marcarNotificacionComoLeida"
+      tags:
+        - Notificaciones
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: "ID de la notificación"
+      responses:
+        "200":
+          description: "Notificación marcada como leída"
+          schema:
+            $ref: "#/definitions/Notificacion"
+        "404":
+          description: "Notificación no encontrada"
+          schema:
+            $ref: "#/definitions/Error"
+
+definitions:
+  Producto:
+    type: object
+    properties:
+      _id:
+        type: string
+      vendedor:
+        type: string
+      titulo:
+        type: string
+      descripcion:
+        type: string
+      categorias:
+        type: array
+        items:
+          type: string
+      precio:
+        type: number
+      moneda:
+        type: string
+        enum: [PESO_ARG, DOLAR_USA, REAL]
+      stock:
+        type: integer
+      fotos:
+        type: array
+        items:
+          type: string
+      activo:
+        type: boolean
+      vendidos:
+        type: integer
+        default: 0
+
+  Usuario:
+    type: object
+    properties:
+      _id:
+        type: string
+      nombre:
+        type: string
+      email:
+        type: string
+      telefono:
+        type: string
+      password:
+        type: string
+      tipo:
+        type: string
+        enum: [COMPRADOR, VENDEDOR, ADMIN]
+      fechaAlta:
+        type: string
+        format: date-time
+
+  AuthLogin:
+    type: object
+    required: [email, password]
+    properties:
+      email:
+        type: string
+        example: "usuario@dominio.com"
+      password:
+        type: string
+        example: "secret123"
+
+  AuthRegister:
+    type: object
+    required: [nombre, email, password, telefono, tipo]
+    properties:
+      nombre:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      telefono:
+        type: string
+      tipo:
+        type: string
+        enum: [COMPRADOR, VENDEDOR, ADMIN]
+
+  AuthLoginResponse:
+    type: object
+    properties:
+      user:
+        $ref: "#/definitions/Usuario"
+      accessToken:
+        type: string
+
+  ProductosPagedResponse:
+    type: object
+    properties:
+      pagina:
+        type: integer
+      perPage:
+        type: integer
+      total:
+        type: integer
+      totalPaginas:
+        type: integer
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/Producto"
+      success:
+        type: boolean
+        description: "Presente y 'false' cuando no se encontraron productos"
+      message:
+        type: string
+        description: "Mensaje informativo en caso de lista vacía"
+
+  Pedido:
+    type: object
+    properties:
+      _id:
+        type: string
+      comprador:
+        type: string
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/ItemPedido"
+      moneda:
+        type: string
+        enum: [PESO_ARG, DOLAR_USA, REAL]
+      total:
+        type: number
+      direccionEntrega:
+        $ref: "#/definitions/DireccionEntrega"
+      estado:
+        type: string
+        enum:
+          [PENDIENTE, CONFIRMADO, EN_PREPARACION, ENVIADO, ENTREGADO, CANCELADO]
+      fechaCreacion:
+        type: string
+        format: date-time
+      historialEstados:
+        type: array
+        items:
+          $ref: "#/definitions/CambioEstado"
+
+  PedidoCreate:
+    type: object
+    required: [comprador, items, moneda, direccionEntrega]
+    properties:
+      comprador:
+        type: string
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/ItemPedidoCreate"
+      moneda:
+        type: string
+        enum: [PESO_ARG, DOLAR_USA, REAL]
+      direccionEntrega:
+        $ref: "#/definitions/DireccionEntrega"
+
+  ItemPedido:
+    type: object
+    properties:
+      producto:
+        type: string
+      cantidad:
+        type: integer
+      precio:
+        type: number
+      subtotal:
+        type: number
+
+  ItemPedidoCreate:
+    type: object
+    required: [producto, cantidad]
+    properties:
+      producto:
+        type: string
+      cantidad:
+        type: integer
+
+  DireccionEntrega:
+    type: object
+    properties:
+      calle:
+        type: string
+      numero:
+        type: string
+      ciudad:
+        type: string
+      codigoPostal:
+        type: string
+      provincia:
+        type: string
+      pais:
+        type: string
+
+  CambioEstado:
+    type: object
+    properties:
+      fecha:
+        type: string
+        format: date-time
+      estado:
+        type: string
+        enum:
+          [PENDIENTE, CONFIRMADO, EN_PREPARACION, ENVIADO, ENTREGADO, CANCELADO]
+      usuario:
+        type: string
+      motivo:
+        type: string
+
+  Notificacion:
+    type: object
+    properties:
+      id:
+        type: string
+      usuarioDestino:
+        type: string
+      mensaje:
+        type: string
+      fechaAlta:
+        type: string
+        format: date-time
+      leida:
+        type: boolean
+      fechaLeida:
+        type: string
+        format: date-time
+        x-nullable: true
+
+  NotificacionCreate:
+    type: object
+    required: [usuarioDestino, mensaje]
+    properties:
+      usuarioDestino:
+        type: string
+      mensaje:
+        type: string
+
+  Error:
+    type: object
+    properties:
+      success:
+        type: boolean
+      error:
+        type: string

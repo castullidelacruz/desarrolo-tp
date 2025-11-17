@@ -1,0 +1,121 @@
+@startuml
+' Clases de Entidad
+class Pedido {
+  - id: String
+  - comprador: Usuario
+  - items: ItemPedido[]
+  - total: Double
+  - moneda: Moneda
+  - direccionEntrega: DireccionEntrega
+  - estado: EstadoPedido
+  - fecha: Date
+  - historialEstados: CambioEstadoPedido[]
+  + calcularTotal(): Double
+  + actualizarEstado(estado: EstadoPedido, quien: Usuario, motivo: String): void
+  + validarStock(): boolean
+}
+
+class Usuario {
+  - id: String
+  - usuario: String
+  - email: String
+  - password: String
+  - tipo: TipoUsuario
+  - fechaAlta: Date
+}
+
+class Producto {
+  - id: String
+  - vendedor: Usuario
+  - nombre: String
+  - descripcion: String
+  - categoria: Categoria[]
+  - precio: Double
+  - moneda: Moneda
+  - stock: Integer
+  - fotos: String[]
+  - activo: Boolean
+  + estaDisponible(cantidad: Integer): boolean
+  + consumirStock(cantidad: Integer): void
+  + aumentarStock(cantidad: Integer): void
+}
+
+class ItemPedido {
+  - producto: Producto
+  - cantidad: Integer
+  - precioUnitario: Double
+  + subtotal(): Double
+}
+
+class DireccionEntrega {
+  - calle: String
+  - altura: String
+  - piso: String
+  - departamento: String
+  - codigoPostal: String
+  - ciudad: String
+  - provincia: String
+  - pais: String
+  - lat: String
+  - lon: String
+}
+
+class CambioEstadoPedido {
+  - fecha: Date
+  - estado: EstadoPedido
+  - pedido: Pedido
+  - usuario: Usuario
+  - motivo: String
+}
+
+class Notificacion {
+  - id: String
+  - usuarioDestino: Usuario
+  - mensaje: String
+  - fechaAlta: Date
+  - leida: boolean
+  - fechaLeida: Date
+  + marcarComoLeida(): void
+}
+
+class Categoria {
+  - nombre: String
+}
+
+' Clase de Utilidad (Factory)
+class FactoryNotificacion {
+  + crearSegunEstadoPedido(estado: EstadoPedido): String
+  + crearSegunPedido(pedido: Pedido): Notificacion
+}
+
+' Relaciones (Asociaciones, Composiciones, Dependencias)
+
+' Pedido
+Pedido "1" -- "1" Usuario : comprador
+Pedido "1" *-- "0..*" ItemPedido : items (Composición)
+Pedido "1" -- "1" DireccionEntrega : direccionEntrega
+Pedido "1" *-- "0..*" CambioEstadoPedido : historialEstados (Composición)
+Pedido ..> FactoryNotificacion
+
+' ItemPedido
+ItemPedido "0..*" -- "1" Producto : producto
+
+' Producto
+Producto "0..*" -- "1" Usuario : vendedor
+Producto "0..*" -- "0..*" Categoria : categoria
+
+' CambioEstadoPedido
+CambioEstadoPedido "0..*" -- "1" Pedido : pedido (Reversa)
+CambioEstadoPedido "0..*" -- "1" Usuario : usuario
+
+' Notificacion
+Notificacion "0..*" -- "1" Usuario : usuarioDestino
+
+' FactoryNotificacion
+FactoryNotificacion ..> Notificacion : <<creates>>
+FactoryNotificacion ..> Pedido
+
+' Nota: Las flechas en el diagrama original que salen de las clases hacia FactoryNotificacion, Notificacion y otras representan dependencias/asociaciones/creación.
+' En PlantUML, las composiciones/agregaciones ya tienen un rombo. Usamos lineas sólidas para asociaciones y punteadas para dependencias (Factory).
+' La flecha de CambioEstadoPedido a Pedido y Usuario está modelada como asociación simple/reversa.
+@enduml

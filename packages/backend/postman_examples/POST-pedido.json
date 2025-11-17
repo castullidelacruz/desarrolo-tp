@@ -1,0 +1,20 @@
+{
+  "comprador": "68e149ea3beb18b8db719a82",
+  "items": [
+    { "producto": "68e01854dddce6dbc0d320d7", "cantidad": 2 },
+    { "producto": "68e01865dddce6dbc0d320d9", "cantidad": 1 }
+  ],
+  "moneda": "PESO_ARG",
+  "direccionEntrega": {
+    "calle": "Av. Libre Viva",
+    "altura": 742,
+    "piso": "1",
+    "departamento": "A",
+    "codigoPostal": "1001",
+    "ciudad": "Buenos Aires",
+    "provincia": "Buenos Aires",
+    "pais": "Argentina",
+    "lat": -34.6037,
+    "long": -58.3816
+  }
+}

@@ -1,0 +1,121 @@
+.pg-container {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.pg-thumbs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 480px;
+  overflow: auto;
+}
+
+.pg-thumb {
+  border: 1px solid #eee;
+  background: #fff;
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.pg-thumb img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.pg-thumb.active {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.pg-viewer {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.pg-image-wrap {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pg-main-image {
+  width: 100%;
+  height: 100%; /* ocupar toda la altura del wrap */
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+/* Asegurar ancho mínimo de la imagen dentro del wrap */
+.pg-image-wrap .product-image,
+.pg-image-wrap .pg-main-image {
+  min-width: 300px;
+}
+
+.pg-main-image:hover {
+  transform: scale(1.03);
+}
+
+.pg-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pg-prev {
+  left: 8px;
+}
+.pg-next {
+  right: 8px;
+}
+
+.pg-empty {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 2rem;
+  color: #666;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .pg-container {
+    flex-direction: column;
+  }
+
+  .pg-thumbs {
+    flex-direction: row;
+    max-height: none;
+    overflow: auto;
+  }
+
+  .pg-thumb img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .pg-image-wrap {
+    height: 320px;
+  }
+  .pg-main-image {
+    height: 100%;
+  }
+}

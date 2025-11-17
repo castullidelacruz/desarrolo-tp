@@ -1,0 +1,25 @@
+.footer {
+  background: #fff3c4;
+  border-top: 1px solid #f1e3a4;
+  width: 100%;
+  margin-top: auto;
+}
+
+.footer__inner {
+  width: min(1100px, 92%);
+  margin: 0 auto;
+  padding: 1rem 0;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer__brand {
+  font-weight: 700;
+  color: #d97706;
+}
+
+.footer__copy {
+  font-size: 0.9rem;
+}

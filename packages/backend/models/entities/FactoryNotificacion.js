@@ -15,22 +15,12 @@ export class FactoryNotificacion {
     return this.mensajes[estado] || this.mensajes["DEFAULT"];
   }
 
-  /**
-   * Crea una notificación para la base de datos según el estado del pedido
-   * @param {Object} pedidoData - Datos del pedido populados desde MongoDB
-   * @param {string} estado - Estado del pedido
-   * @param {string} pedidoNumero - Número del pedido (ej: #123)
-   * @param {string} productoTitulo - Título del primer producto
-   * @param {Date} fecha - Fecha del cambio de estado
-   * @returns {Object} Objeto con los datos de la notificación
-   */
+
   crearNotificacionDB(pedidoData, estado, pedidoNumero, productoTitulo, fecha) {
     const handlers = {
       [EstadoPedido.Pendiente]: () => {
-        // Notificaciones para comprador y vendedor cuando se crea el pedido
         const notificaciones = [];
         
-        // Notificación para el comprador
         notificaciones.push({
           userId: pedidoData.comprador?._id || pedidoData.comprador,
           tipo: "confirmacion_pedido",
@@ -43,7 +33,6 @@ export class FactoryNotificacion {
           fecha,
         });
 
-        // Notificación para el vendedor
         notificaciones.push({
           userId: pedidoData.vendedor?._id || pedidoData.vendedor,
           tipo: "confirmacion_pedido",
@@ -59,7 +48,6 @@ export class FactoryNotificacion {
         return notificaciones;
       },
       [EstadoPedido.Enviado]: () => {
-        // Notificación para el comprador
         return [{
           userId: pedidoData.comprador?._id || pedidoData.comprador,
           tipo: "pedido_enviado",
@@ -73,7 +61,6 @@ export class FactoryNotificacion {
         }];
       },
       [EstadoPedido.Cancelado]: () => {
-        // Notificación para el vendedor
         return [{
           userId: pedidoData.vendedor?._id || pedidoData.vendedor,
           tipo: "pedido_cancelado",
